@@ -6,9 +6,17 @@
   </head>
   <body>
     <h1>this is the chat app</h1>
+    <ol id='messageS'>
 
+    </ol>
+    <form id='message-form'>
+      <input type="text" name="message" placeholder='type your message here' id='message-input' />
+      <button id='send-message-button'>Send</button>
+      <button id='send-location-button'>Send Location</button>
+    </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src='/socket.io/socket.io.js'></script> <!--load in the socket library  -->
     <script src='/js/index.js'></script>
-
   </body>
 </html>

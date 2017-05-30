@@ -7,6 +7,8 @@ const SocketIO = require('socket.io')
 const publicPath = path.join(__dirname, '../public')
 const port = process.env.PORT || 3000
 
+const {generateMessage, generateLocationMessage} = require('./utils/message')
+
 var app = express()
 var server = http.createServer(app)
 
@@ -19,17 +21,26 @@ app.use(express.static(publicPath))
 io.on('connection', function (socket) {
   console.log('new user connected')
 
+  // socket.emit emits event from server to single connection
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to Chat App'))
 
-  socket.on('createMessage', (message) => {
+  // broadcasting means emitting an event from server to everyone but one user
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'))
+  // socket.broadcast.emit('newMessage', {
+  //   from: message.from,
+  //   text: message.text,
+  //   createdAt: new Date().getTime()
+  // })
+
+  socket.on('createMessage', (message, callback) => {
     console.log(`created message is ${message}`)
-    // socket.emit emits event to single connection
-    // io.emit emits event to every single connection
-    io.emit('newMessage', {
-      from: message.from,
-      text: message.text,
-      createdAt: new Date().getTime()
-    })
+    // io.emit emits event from server to every single connection
+    io.emit('newMessage', generateMessage(message.from, message.text))
+    callback(`This is an acknowledgement from the server`)
+  })
 
+  socket.on('createLocationMessage', (coords) => {
+    io.emit('newLocationMessage', generateLocationMessage(`Admin`, coords.latitude, coordes.longitude))
   })
 
   socket.on('disconnect', function () {
